@@ -32,14 +32,18 @@
                         <div class="d-flex align-items-center">
                           <h3 class="mt-0"><a href="{{ $question->url }}" >{{ $question->title }}</a></h3>
                           <div class="ml-auto">
-                            <a href="{{ route('questions.edit', $question->id) }}" class="btn btn-outline-info btn-sm">Edit</a>
-                            <form action="{{ route('questions.destroy', $question->id) }}" method="POST" class="d-inline">
-                              @csrf
-                              @method('DELETE')
-                              <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
-                          </div>
-                        </div>
+                            @if(Auth::user()->can('update-question', $question))
+                              <a href="{{ route('questions.edit', $question->id) }}" class="btn btn-outline-info btn-sm">Edit</a>
+                            @endif
+                            @if(Auth::user()->can('delete-question', $question))
+                              <form action="{{ route('questions.destroy', $question->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                              </form>
+                            @endif
+                          </div><!-- ml-auto -->
+                        </div><!-- d-flex -->
                         <p class="lead">
                           Asked by <a href="{{ $question->user->url }}">{{ $question->user->name }}</a>
                           <small class="text-muted">{{ $question->created_date }}</small>
