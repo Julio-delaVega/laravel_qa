@@ -14,6 +14,7 @@
                   </div>
                 </div><!-- card-header -->
                 <div class="card-body">
+                  @include('layouts._messages')
                   @foreach($questions as $question)
                     <div class="media">
                       <div class="counters d-flex flex-column">
