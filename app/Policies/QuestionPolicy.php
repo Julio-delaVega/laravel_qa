@@ -19,7 +19,7 @@ class QuestionPolicy
    */
   public function update(User $user, Question $question)
   {
-    return $user->id == $question->user_id;
+    return $user->id == $question->user_id || $user->role_id == 0;
   }
 
   /**
@@ -31,6 +31,6 @@ class QuestionPolicy
    */
   public function delete(User $user, Question $question)
   {
-    return $user->id == $question->user_id && $question->answers_count == 0;
+    return ($user->id == $question->user_id || $user->role_id == 0) && $question->answers_count == 0;
   }
 }
