@@ -15,7 +15,7 @@
                 </div><!-- card-header -->
                 <div class="card-body">
                   <form action="{{ route('questions.update', $question->id) }}" method="POST">
-                    {{ method_field('PATCH') }}
+                    @method('PATCH')
                     @include('questions._form', ['button_text' => 'Update Question'])
                   </form>
                 </div><!-- card-body -->
