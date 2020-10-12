@@ -10,15 +10,27 @@
         @foreach($answers as $answer)
           <div class="media">
             <div class="d-flex flex-column vote-controls">
-              <a title="This answer is useful" class="vote-up">
-                <i class="fas fa-caret-up fa-3x"></i>
-              </a>
+              <form id="up-vote-answer-{{ $answer->id }}" action="/answers/{{ $answer->id }}/vote" method="POST">
+                @csrf
+                <input type="hidden" name="vote" value="1">
+                <a title="This answer is useful" class="vote-up {{ Auth::guest() ? 'off' : '' }}"
+                  onclick="event.preventDefault(); document.getElementById('up-vote-answer-{{ $answer->id }}').submit()"
+                >
+                  <i class="fas fa-caret-up fa-3x"></i>
+                </a>
+              </form>
               <span class="votes-count">
-                2
+                {{ $answer->votes_count }}
               </span>
-              <a title="This answer is not useful" class="vote-down off">
-                <i class="fas fa-caret-down fa-3x"></i>
-              </a>
+              <form id="down-vote-answer-{{ $answer->id }}" action="/answers/{{ $answer->id }}/vote" method="POST">
+                @csrf
+                <input type="hidden" name="vote" value="-1">
+                <a title="This answer is not useful" class="vote-down {{ Auth::guest() ? 'off' : '' }}"
+                  onclick="event.preventDefault(); document.getElementById('down-vote-answer-{{ $answer->id }}').submit()"
+                >
+                  <i class="fas fa-caret-down fa-3x"></i>
+                </a>
+              </form>
               @can('acceptBest', $answer)
                 <form id="accept-answer-{{ $answer->id }}" method="POST" action="{{ route('answers.accept', $answer->id) }}">
                   @csrf
