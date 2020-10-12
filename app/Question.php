@@ -18,6 +18,11 @@ class Question extends Model
     return $this->belongsTo(User::class);
   }
 
+  public function answers()
+  {
+    return $this->hasMany(Answer::class);
+  }
+
   public function setTitleAttribute($value)
   {
     $this->attributes['title'] = $value;
@@ -46,14 +51,15 @@ class Question extends Model
     return "unanswered";
   }
 
+  public function acceptBestAnswer(Answer $answer)
+  {
+    $this->best_answer_id = $answer->id;
+    $this->save();
+  }
+
   public function getBodyHtmlAttribute()
   {
     $markdown = new CommonMarkConverter(['allow_unsafe_links' => false]);
     return $markdown->convertToHtml($this->body);
-  }
-
-  public function answers()
-  {
-    return $this->hasMany(Answer::class);
   }
 }
