@@ -28,7 +28,7 @@ class AddForeignBestAnswerIdToQuestionsTable extends Migration
   {
     Schema::table('questions', function (Blueprint $table) {
       $table->dropForeign(['best_answer_id']);
-      $table->unsignedInteger('best_answer_id')->nullable()->change();
+      // $table->unsignedInteger('best_answer_id')->nullable()->change();
     });
   }
 }

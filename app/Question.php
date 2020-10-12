@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use League\CommonMark\CommonMarkConverter;
+use \Auth;
 
 class Question extends Model
 {
@@ -23,10 +24,30 @@ class Question extends Model
     return $this->hasMany(Answer::class);
   }
 
+  public function favorites()
+  {
+    return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+  }
+
   public function setTitleAttribute($value)
   {
     $this->attributes['title'] = $value;
     $this->attributes['slug'] = Str::slug($value);
+  }
+
+  public function isFavorited()
+  {
+    return $this->favorites()->where('user_id', Auth::id())->count() > 0;
+  }
+
+  public function getIsFavoritedAttribute()
+  {
+    return $this->isFavorited();
+  }
+
+  public function getFavoritesCountAttribute()
+  {
+    return $this->favorites()->count();
   }
 
   public function getUrlAttribute()
