@@ -65,33 +65,28 @@ class User extends Authenticatable
   public function voteQuestion(Question $question, $vote)
   {
     $vote_questions = $this->voteQuestions();
-    if($vote_questions->where('votable_id', $question->id)->exists())
-    {
-      $vote_questions->updateExistingPivot($question, ['vote' => $vote]);
-    }
-    else
-    {
-      $vote_questions->attach($question, ['vote' => $vote]);
-    }
-    $question->load('votes');
-    $question->votes_count = (int) $question->votes()->sum('vote');
-    $question->save();
+    $this->_vote($vote_questions, $question, $vote);
   }
 
   public function voteAnswer(Answer $answer, $vote)
   {
     $vote_answers = $this->voteAnswers();
-    if($vote_answers->where('votable_id', $answer->id)->exists())
+    $this->_vote($vote_answers, $answer, $vote);
+  }
+
+  private function _vote($relationship, $model, $vote)
+  {
+    if($relationship->where('votable_id', $model->id)->exists())
     {
-      $vote_answers->updateExistingPivot($answer, ['vote' => $vote]);
+      $relationship->updateExistingPivot($model, ['vote' => $vote]);
     }
     else
     {
-      $vote_answers->attach($answer, ['vote' => $vote]);
+      $relationship->attach($model, ['vote' => $vote]);
     }
-    $answer->load('votes');
-    $answer->votes_count = (int) $answer->votes()->sum('vote');
-    $answer->save();
+    $model->load('votes');
+    $model->votes_count = (int) $model->votes()->sum('vote');
+    $model->save();
   }
 
   public function getUrlAttribute()

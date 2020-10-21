@@ -9,10 +9,9 @@ use \Auth;
 
 class Question extends Model
 {
-  protected $fillable = [
-    'title',
-    'body'
-  ];
+  use VotableTrait;
+
+  protected $fillable = ['title', 'body'];
 
   public function user()
   {
@@ -29,20 +28,20 @@ class Question extends Model
     return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
   }
 
-  public function votes()
-  {
-    return $this->morphToMany(User::class, 'votable');
-  }
+  // public function votes()
+  // {
+  //   return $this->morphToMany(User::class, 'votable');
+  // }
 
-  public function upVotes()
-  {
-    return $this->votes()->wherePivot('vote', 1);
-  }
+  // public function upVotes()
+  // {
+  //   return $this->votes()->wherePivot('vote', 1);
+  // }
 
-  public function downVotes()
-  {
-    return $this->votes()->wherePivot('vote', -1);
-  }
+  // public function downVotes()
+  // {
+  //   return $this->votes()->wherePivot('vote', -1);
+  // }
 
   public function setTitleAttribute($value)
   {
