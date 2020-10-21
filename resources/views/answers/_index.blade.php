@@ -31,22 +31,6 @@
                   <i class="fas fa-caret-down fa-3x"></i>
                 </a>
               </form>
-              @can('acceptBest', $answer)
-                <form id="accept-answer-{{ $answer->id }}" method="POST" action="{{ route('answers.accept', $answer->id) }}">
-                  @csrf
-                  <a title="Mark as best answer" class="{{ $answer->status }} mt-2" 
-                    onclick="event.preventDefault(); document.getElementById('accept-answer-{{ $answer->id }}').submit()"
-                  >
-                    <i class="fas fa-check fa-2x"></i>
-                  </a>
-                </form>
-              @else
-                @if($answer->is_best)
-                  <a title="Marked as best answer" class="{{ $answer->status }} mt-2">
-                    <i class="fas fa-check fa-2x"></i>
-                  </a>
-                @endif
-              @endcan
             </div><!-- d-flex -->
             <div class="media-body">
               {!! $answer->body_html !!}
@@ -67,15 +51,10 @@
                 </div><!-- col-4 -->
                 <div class="col-4"></div><!-- col-4 -->
                 <div class="col-4">
-                  <span class="text-muted">Answered {{ $answer->created_date }}</span>
-                  <div class="media mt-2">
-                    <a href="{{ $answer->user->url }}" class="pr-2">
-                      <img src="{{ $answer->user->avatar }}">
-                    </a>
-                    <div class="media-body mt-1">
-                      <a href="{{ $answer->user->url }}">{{ $answer->user->name }}</a>
-                    </div><!-- media-body -->
-                  </div><!-- media -->
+                  @include('shared._author', [
+                    'model' => $answer,
+                    'label' => 'Answered'
+                  ])
                 </div><!-- col-4 -->
               </div>
             </div><!-- media-body -->
