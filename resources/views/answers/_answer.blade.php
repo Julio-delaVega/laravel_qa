@@ -21,10 +21,7 @@
       </div><!-- col-4 -->
       <div class="col-4"></div><!-- col-4 -->
       <div class="col-4">
-        @include('shared._author', [
-          'model' => $answer,
-          'label' => 'Answered'
-        ])
+        <user-info :model="{{ $answer }}" label="Answered"></user-info>
       </div><!-- col-4 -->
     </div>
   </div><!-- media-body -->
