@@ -42,11 +42,11 @@ class UsersQuestionsAnswersTableSeeder extends Seeder
     foreach(User::all() as $user)
     {
       $user->questions()->saveMany(
-        factory(Question::class, rand(2, 5))->make()
+        factory(Question::class, rand(1, 3))->make()
       )
       ->each(function($question) {
         $question->answers()->saveMany(
-          factory(Answer::class, rand(2, 5))->make()
+          factory(Answer::class, rand(0, 3))->make()
         );
       });
     }

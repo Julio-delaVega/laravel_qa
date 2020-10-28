@@ -18,7 +18,7 @@ class FavoritesTableSeeder extends Seeder
 
     foreach(Question::all() as $question)
     {
-      for($i = 0; $i < rand(1, $count_users); $i++)
+      for($i = 0; $i < rand(0, $count_users); $i++)
       {
         $user = $users[$i];
 

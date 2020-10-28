@@ -22,7 +22,7 @@ class VotablesTableSeeder extends Seeder
 
     foreach(Question::all() as $question)
     {
-      for($i = 0; $i < rand(1, $users_count); $i++)
+      for($i = 0; $i < rand(0, $users_count); $i++)
       {
         $user = $users[$i];
         $user->voteQuestion($question, $votes[rand(0, 1)]);
@@ -31,7 +31,7 @@ class VotablesTableSeeder extends Seeder
 
     foreach(Answer::all() as $answer)
     {
-      for($i = 0; $i < rand(1, $users_count); $i++)
+      for($i = 0; $i < rand(0, $users_count); $i++)
       {
         $user = $users[$i];
         $user->voteAnswer($answer, $votes[rand(0, 1)]);

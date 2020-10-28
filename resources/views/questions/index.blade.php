@@ -15,7 +15,7 @@
         </div><!-- card-header -->
         <div class="card-body">
           @include('layouts._messages')
-          @foreach($questions as $question)
+          @forelse($questions as $question)
             <div class="media">
               <div class="counters d-flex flex-column">
                 <div class="vote">
@@ -54,7 +54,11 @@
               </div><!-- media-body -->
             </div><!-- media -->
             <hr>
-          @endforeach
+          @empty
+            <div class="alert alert-warning">
+              <strong>Sorry!</strong> There are no questions available.
+            </div>
+          @endforelse
           <div class="mx-auto">
             {{ $questions->links() }}
           </div><!-- mx-auto -->
