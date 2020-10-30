@@ -20,11 +20,7 @@
                 <a @click.prevent="edit" class="btn btn-outline-info btn-sm">Edit</a>
               @endcan
               @can('delete', $answer)
-                <form action="{{ route('questions.answers.destroy', [$question->id, $answer->id]) }}" method="POST" class="d-inline">
-                  @csrf
-                  @method('DELETE')
-                  <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                </form>
+                <button class="btn btn-outline-danger btn-sm" @click="destroy">Delete</button>
               @endcan
             </div><!-- ml-auto -->
           </div><!-- col-4 -->
