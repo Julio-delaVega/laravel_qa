@@ -8,9 +8,9 @@
   </a>
 </form>
 @else
-@if($model->is_best)
-  <a title="Marked as best answer" class="{{ $model->status }} mt-2">
-    <i class="fas fa-check fa-2x"></i>
-  </a>
-@endif
+  @if($model->is_best)
+    <a title="Marked as best answer" class="{{ $model->status }} mt-2">
+      <i class="fas fa-check fa-2x"></i>
+    </a>
+  @endif
 @endcan
