@@ -1,42 +1,47 @@
 <template>
-    <div class="row mt-4" v-cloak v-if="count">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title">
-                        <h2>{{ title }}</h2>
+    <div>
+        <div class="row mt-4" v-cloak v-if="count">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <h2>{{ title }}</h2>
+                        </div>
+                        <!-- card-title -->
+                        <hr />
+                        <answer
+                            v-for="(answer, index) in answers"
+                            :answer="answer"
+                            :key="answer.id"
+                            @deleted="remove(index)"
+                        ></answer>
+                        <div v-if="nextUrl" class="text-center mt-3">
+                            <button
+                                class="btn btn-outline-secondary"
+                                @click.prevent="fetch(nextUrl)"
+                            >
+                                Load more answers
+                            </button>
+                        </div>
                     </div>
-                    <!-- card-title -->
-                    <hr />
-                    <answer
-                        v-for="(answer, index) in answers"
-                        :answer="answer"
-                        :key="answer.id"
-                        @deleted="remove(index)"
-                    ></answer>
-                    <div v-if="nextUrl" class="text-center mt-3">
-                        <button
-                            class="btn btn-outline-secondary"
-                            @click.prevent="fetch(nextUrl)"
-                        >
-                            Load more answers
-                        </button>
-                    </div>
+                    <!-- card-body -->
                 </div>
-                <!-- card-body -->
+                <!-- card -->
             </div>
-            <!-- card -->
+            <!-- col -->
         </div>
-        <!-- col -->
+        <!-- row -->
+        <new-answer :question-id="question.id" @created="add"></new-answer>
     </div>
-    <!-- row -->
 </template>
 
 <script>
 import Answer from "./Answer";
+import NewAnswer from "./NewAnswer";
 export default {
     components: {
-        Answer
+        Answer,
+        NewAnswer
     },
     props: ["question"],
     data() {
@@ -61,6 +66,10 @@ export default {
                 this.answers.push(...res.data.data);
                 this.nextUrl = res.data.next_page_url;
             });
+        },
+        add(answer) {
+            this.answers.push(answer);
+            this.count++;
         },
         remove(index) {
             this.answers.splice(index, 1);
