@@ -9,9 +9,10 @@
                     <!-- card-title -->
                     <hr />
                     <answer
-                        v-for="answer in answers"
+                        v-for="(answer, index) in answers"
                         :answer="answer"
                         :key="answer.id"
+                        @deleted="remove(index)"
                     ></answer>
                     <div v-if="nextUrl" class="text-center mt-3">
                         <button
@@ -60,6 +61,10 @@ export default {
                 this.answers.push(...res.data.data);
                 this.nextUrl = res.data.next_page_url;
             });
+        },
+        remove(index) {
+            this.answers.splice(index, 1);
+            this.count--;
         }
     }
 };
