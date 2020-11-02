@@ -25,7 +25,7 @@ export default {
     },
     computed: {
         canAccept() {
-            return true;
+            return this.authorize("acceptBest", this.answer);
         },
         accepted() {
             return !this.canAccept && this.isBest;
