@@ -16,9 +16,7 @@
             </div><!-- card-title -->
             <hr>
             <div class="media">
-              @include('shared._votes', [
-                'model' => $question
-              ])
+              <vote :model="{{ $question }}" name="question"></vote>
               <div class="media-body">
                 {!! $question->body_html !!}
                 <div class="row">
