@@ -13,6 +13,14 @@
                         :answer="answer"
                         :key="answer.id"
                     ></answer>
+                    <div v-if="nextUrl" class="text-center mt-3">
+                        <button
+                            class="btn btn-outline-secondary"
+                            @click.prevent="fetch(nextUrl)"
+                        >
+                            Load more answers
+                        </button>
+                    </div>
                 </div>
                 <!-- card-body -->
             </div>
@@ -29,10 +37,29 @@ export default {
     components: {
         Answer
     },
-    props: ["answers", "count"],
+    props: ["question"],
+    data() {
+        return {
+            questionId: this.question.id,
+            count: this.question.answers_count,
+            answers: [],
+            nextUrl: null
+        };
+    },
     computed: {
         title() {
             return this.count + " " + (this.count > 1 ? "Answers" : "Answer");
+        }
+    },
+    created() {
+        this.fetch(`/questions/${this.questionId}/answers`);
+    },
+    methods: {
+        fetch(endpoint) {
+            axios.get(endpoint).then(res => {
+                this.answers.push(...res.data.data);
+                this.nextUrl = res.data.next_page_url;
+            });
         }
     }
 };
