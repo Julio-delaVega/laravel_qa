@@ -15,12 +15,14 @@
                     <div class="media">
                         <div class="media-body">
                             <div class="form-group">
-                                <textarea
-                                    rows="10"
-                                    class="form-control"
-                                    v-model="body"
-                                    required
-                                ></textarea>
+                                <m-editor :body="body">
+                                    <textarea
+                                        rows="10"
+                                        class="form-control"
+                                        v-model="body"
+                                        required
+                                    ></textarea>
+                                </m-editor>
                             </div>
                             <!-- form-group -->
                             <button
@@ -113,10 +115,11 @@
 <script>
 import Vote from "./Vote";
 import UserInfo from "./UserInfo";
+import MEditor from "./MEditor";
 import modification from "../mixins/modification";
 
 export default {
-    components: { Vote, UserInfo },
+    components: { Vote, UserInfo, MEditor },
     props: ["question"],
     mixins: [modification],
     data() {
