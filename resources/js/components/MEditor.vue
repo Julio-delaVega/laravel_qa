@@ -28,12 +28,22 @@
 
 <script>
 import MarkdownIt from "markdown-it";
+import Autosize from "autosize";
 const md = new MarkdownIt();
 export default {
     props: ["body"],
     computed: {
         preview() {
             return md.render(this.body);
+        }
+    },
+    mounted() {
+        Autosize(this.$el.querySelector("textarea"));
+    },
+    watch: {
+        body() {
+            Autosize(this.$el.querySelector("textarea"));
+            console.log("New body");
         }
     }
 };
