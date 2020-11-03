@@ -17,7 +17,9 @@
         <!-- card-header -->
         <div class="card-body tab-content">
             <div id="write" class="tab-pane active"><slot></slot></div>
-            <div id="preview" class="tab-pane">Preview...</div>
+            <!-- #write -->
+            <div id="preview" class="tab-pane" v-html="preview"></div>
+            <!-- #preview -->
         </div>
         <!-- card-body -->
     </div>
@@ -25,8 +27,15 @@
 </template>
 
 <script>
+import MarkdownIt from "markdown-it";
+const md = new MarkdownIt();
 export default {
-    props: ["body"]
+    props: ["body"],
+    computed: {
+        preview() {
+            return md.render(this.body);
+        }
+    }
 };
 </script>
 
