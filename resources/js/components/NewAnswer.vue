@@ -10,13 +10,15 @@
                     <hr />
                     <form @submit.prevent="create">
                         <div class="form-group">
-                            <textarea
-                                name="body"
-                                rows="7"
-                                class="form-control"
-                                v-model="body"
-                                required
-                            ></textarea>
+                            <m-editor :body="body" name="new-answer">
+                                <textarea
+                                    name="body"
+                                    rows="7"
+                                    class="form-control"
+                                    v-model="body"
+                                    required
+                                ></textarea>
+                            </m-editor>
                         </div>
                         <!-- form-group -->
                         <div class="form-group">
@@ -41,7 +43,9 @@
 </template>
 
 <script>
+import MEditor from "./MEditor";
 export default {
+    components: { MEditor },
     props: ["questionId"],
     data() {
         return {
