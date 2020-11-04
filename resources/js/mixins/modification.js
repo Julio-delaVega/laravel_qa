@@ -1,4 +1,7 @@
+import highlight from "./highlight";
+
 export default {
+    mixins: [highlight],
     data() {
         return {
             editing: false
@@ -23,6 +26,9 @@ export default {
                     this.$toast.error(err.response.data.message, "Error", {
                         timeout: 3000
                     });
+                })
+                .then(() => {
+                    this.highlight();
                 });
         },
         payload() {},

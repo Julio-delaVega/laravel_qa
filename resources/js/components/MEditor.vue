@@ -39,14 +39,8 @@ export default {
             return md.render(this.body);
         }
     },
-    mounted() {
+    updated() {
         Autosize(this.$el.querySelector("textarea"));
-    },
-    watch: {
-        body() {
-            Autosize(this.$el.querySelector("textarea"));
-            console.log("New body");
-        }
     }
 };
 </script>
