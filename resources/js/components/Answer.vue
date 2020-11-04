@@ -2,14 +2,19 @@
     <div class="media post">
         <vote :model="answer" name="answer"></vote>
         <div class="media-body">
-            <form v-if="editing" @submit.prevent="update">
+            <form
+                v-show="authorize('modify', answer) && editing"
+                @submit.prevent="update"
+            >
                 <div class="form-group">
-                    <textarea
-                        rows="10"
-                        class="form-control"
-                        v-model="body"
-                        required
-                    ></textarea>
+                    <m-editor :body="body" :name="uniqueName">
+                        <textarea
+                            rows="10"
+                            class="form-control"
+                            v-model="body"
+                            required
+                        ></textarea>
+                    </m-editor>
                 </div>
                 <!-- form-group -->
                 <button
@@ -27,8 +32,8 @@
                     Cancel
                 </button>
             </form>
-            <div v-else>
-                <div v-html="bodyHtml"></div>
+            <div v-show="!editing">
+                <div ref="bodyHtml" v-html="bodyHtml"></div>
                 <div class="row">
                     <div class="col-4">
                         <div class="ml-auto">
@@ -64,12 +69,9 @@
 </template>
 
 <script>
-import Vote from "./Vote";
-import UserInfo from "./UserInfo";
 import modification from "../mixins/modification";
 
 export default {
-    components: { Vote, UserInfo },
     props: ["answer"],
     mixins: [modification],
     data() {
@@ -87,7 +89,13 @@ export default {
         },
         endpoint() {
             return `/questions/${this.questionId}/answers/${this.id}`;
+        },
+        uniqueName() {
+            return `answer-${this.id}`;
         }
+    },
+    mounted() {
+        this.highlight();
     },
     methods: {
         setEditCache() {

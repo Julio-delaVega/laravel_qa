@@ -19,7 +19,7 @@
                     <div class="media">
                         <div class="media-body">
                             <div class="form-group">
-                                <m-editor :body="body">
+                                <m-editor :body="body" :name="uniqueName">
                                     <textarea
                                         rows="10"
                                         class="form-control"
@@ -117,13 +117,9 @@
 </template>
 
 <script>
-import Vote from "./Vote";
-import UserInfo from "./UserInfo";
-import MEditor from "./MEditor";
 import modification from "../mixins/modification";
 
 export default {
-    components: { Vote, UserInfo, MEditor },
     props: ["question"],
     mixins: [modification],
     data() {
@@ -145,6 +141,9 @@ export default {
         },
         endpoint() {
             return `/questions/${this.id}`;
+        },
+        uniqueName() {
+            return `question-${this.id}`;
         }
     },
     methods: {
