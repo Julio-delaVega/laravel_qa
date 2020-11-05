@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/token', 'Auth\LoginController@getToken');
+Route::post('/login', 'Api\Auth\LoginController@store');
+Route::post('/register', 'Api\Auth\RegisterController');
 Route::get('/questions', 'Api\QuestionsController@index');
 Route::get('/questions/{question}-{slug}', 'Api\QuestionDetailsController');
 Route::get('/questions/{question}/answers', 'Api\AnswersController@index');
 Route::middleware(['auth:api'])->group(function() {
+  Route::delete('/logout', 'Api\Auth\LoginController@destroy');
   Route::apiResource('/questions', 'Api\QuestionsController')->except('index');
   Route::apiResource('/questions.answers', 'Api\AnswersController')->except('index');
   Route::post('/questions/{question}/vote', 'Api\VoteQuestionController');
