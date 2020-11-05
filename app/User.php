@@ -50,6 +50,51 @@ class User extends Authenticatable
     return $this->hasMany(Answer::class);
   }
 
+  public function posts()
+  {
+    $type = request()->get('type');
+
+    if($type === 'questions')
+    {
+      $posts = $this->questions()->get();
+    }
+    else 
+    {
+      $posts = $this->answers()->with('question')->get();
+      if($type !== 'answers')
+      {
+        $questions = $this->questions()->get();
+        $posts = $posts->merge($questions);
+      }
+    }
+
+    $data = collect();
+
+    foreach($posts as $post)
+    {
+      $item = [
+        'votes_count' => $post->votes_count,
+        'created_at' => $post->created_at->format('d M Y')
+      ];
+
+      if($post instanceof Answer)
+      {
+        $item['type'] = 'answer';
+        $item['title'] = $post->question->title;
+        $item['accepted'] = $post->question->best_answer_id === $post->id;
+      }
+      else
+      {
+        $item['type'] = 'question';
+        $item['title'] = $post->title;
+        $item['accepted'] = (bool) $post->best_answer_id;
+      }
+
+      $data->push($item);
+    }
+    return $data->sortByDesc('votes_count')->values()->all();
+  }
+
   public function favorites()
   {
     return $this->belongsToMany(Question::class, 'favorites')->withTimestamps();
