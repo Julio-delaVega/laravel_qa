@@ -16,21 +16,7 @@
                         <!-- d-flex -->
                     </div>
                     <!-- card-header -->
-                    <div class="card-body">
-                        <div v-if="questions.length">
-                            <question-excerpt
-                                v-for="question in questions"
-                                :question="question"
-                                :key="question.id"
-                            ></question-excerpt>
-                        </div>
-                        <div v-else class="alert alert-warning">
-                            <strong>Sorry!</strong> There are no questions
-                            available.
-                        </div>
-                        <!-- pagination -->
-                    </div>
-                    <!-- card-body -->
+                    <questions></questions>
                 </div>
                 <!-- card -->
             </div>
@@ -42,26 +28,10 @@
 </template>
 
 <script>
-import QuestionExcerpt from "../components/QuestionExcerpt";
+import Questions from "../components/Questions";
 export default {
     components: {
-        QuestionExcerpt
-    },
-    data() {
-        return {
-            questions: []
-        };
-    },
-    mounted() {
-        this.fetchQuestions();
-    },
-    methods: {
-        fetchQuestions() {
-            axios.get("/questions").then(res => {
-                console.log(res);
-                this.questions = res.data.data;
-            });
-        }
+        Questions
     }
 };
 </script>
