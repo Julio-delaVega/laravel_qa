@@ -11785,7 +11785,11 @@ __webpack_require__.r(__webpack_exports__);
   props: ["meta", "links"],
   computed: {
     pagesInfo: function pagesInfo() {
-      return "Page ".concat(this.meta.current_page, " of ").concat(this.meta.last_page);
+      var _this$meta, _this$meta2;
+
+      var currPage = ((_this$meta = this.meta) === null || _this$meta === void 0 ? void 0 : _this$meta.current_page) ? this.meta.current_page : "1";
+      var lastPage = ((_this$meta2 = this.meta) === null || _this$meta2 === void 0 ? void 0 : _this$meta2.last_page) ? this.meta.last_page : "1";
+      return "Page ".concat(currPage, " of ").concat(lastPage);
     },
     isFirst: function isFirst() {
       return this.meta.current_page === 1;
@@ -12613,6 +12617,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_destroy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/destroy */ "./resources/js/mixins/destroy.js");
+/* harmony import */ var _eventbus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../eventbus */ "./resources/js/eventbus.js");
 //
 //
 //
@@ -12679,6 +12684,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["question"],
@@ -12695,12 +12701,13 @@ __webpack_require__.r(__webpack_exports__);
     "delete": function _delete() {
       var _this = this;
 
+      this.$root.disableInterceptor();
       axios["delete"]("/questions/".concat(this.question.id)).then(function (res) {
         _this.$toast.success(res.data.message, "Success", {
           timeout: 2000
         });
 
-        _this.$emit("deleted");
+        _eventbus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit("deleted", _this.question.id); // this.$emit("deleted");
       });
     }
   }
@@ -12830,6 +12837,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Pagination__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Pagination */ "./resources/js/Pagination.vue");
 /* harmony import */ var _QuestionExcerpt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./QuestionExcerpt */ "./resources/js/components/QuestionExcerpt.vue");
+/* harmony import */ var _eventbus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../eventbus */ "./resources/js/eventbus.js");
 //
 //
 //
@@ -12853,7 +12861,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -12869,18 +12877,27 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
+    var _this = this;
+
     this.fetchQuestions();
+    _eventbus__WEBPACK_IMPORTED_MODULE_2__["default"].$on("deleted", function (id) {
+      var index = _this.questions.findIndex(function (q) {
+        return q.id === id;
+      });
+
+      _this.remove(index);
+    });
   },
   methods: {
     fetchQuestions: function fetchQuestions() {
-      var _this = this;
+      var _this2 = this;
 
       axios.get("/questions", {
         params: this.$route.query
       }).then(function (res) {
-        _this.questions = res.data.data;
-        _this.meta = res.data.meta;
-        _this.links = res.data.links;
+        _this2.questions = res.data.data;
+        _this2.meta = res.data.meta;
+        _this2.links = res.data.links;
       });
     },
     remove: function remove(index) {
@@ -68248,15 +68265,10 @@ var render = function() {
           : _vm.questions.length
           ? _c(
               "div",
-              _vm._l(_vm.questions, function(question, index) {
+              _vm._l(_vm.questions, function(question) {
                 return _c("question-excerpt", {
                   key: question.id,
-                  attrs: { question: question },
-                  on: {
-                    deleted: function($event) {
-                      return _vm.remove(index)
-                    }
-                  }
+                  attrs: { question: question }
                 })
               }),
               1
@@ -84224,34 +84236,43 @@ Vue.component("spinner", _components_Spinner_vue__WEBPACK_IMPORTED_MODULE_4__["d
 var app = new Vue({
   el: "#app",
   data: {
-    loading: false
+    loading: false,
+    interceptor: null
   },
   router: _router__WEBPACK_IMPORTED_MODULE_3__["default"],
   created: function created() {
-    var _this = this;
+    this.enableInterceptor();
+  },
+  methods: {
+    enableInterceptor: function enableInterceptor() {
+      var _this = this;
 
-    // Add a request interceptor
-    axios.interceptors.request.use(function (config) {
-      // Do something before request is sent
-      _this.loading = true;
-      return config;
-    }, function (error) {
-      // Do something with request error
-      _this.loading = false;
-      return Promise.reject(error);
-    }); // Add a response interceptor
+      // Add a request interceptor
+      this.interceptor = axios.interceptors.request.use(function (config) {
+        // Do something before request is sent
+        _this.loading = true;
+        return config;
+      }, function (error) {
+        // Do something with request error
+        _this.loading = false;
+        return Promise.reject(error);
+      }); // Add a response interceptor
 
-    axios.interceptors.response.use(function (response) {
-      // Any status code that lie within the range of 2xx cause this function to trigger
-      // Do something with response data
-      _this.loading = false;
-      return response;
-    }, function (error) {
-      // Any status codes that falls outside the range of 2xx cause this function to trigger
-      // Do something with response error
-      _this.loading = false;
-      return Promise.reject(error);
-    });
+      axios.interceptors.response.use(function (response) {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        _this.loading = false;
+        return response;
+      }, function (error) {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        _this.loading = false;
+        return Promise.reject(error);
+      });
+    },
+    disableInterceptor: function disableInterceptor() {
+      axios.interceptors.request.eject(this.interceptor);
+    }
   }
 });
 
@@ -85926,7 +85947,7 @@ var routes = [{
   name: "root"
 }, {
   path: "/home",
-  component: _pages_QuestionsPage__WEBPACK_IMPORTED_MODULE_0__["default"],
+  component: _pages_MyPostsPage__WEBPACK_IMPORTED_MODULE_2__["default"],
   name: "home"
 }, {
   path: "/questions",

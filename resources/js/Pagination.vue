@@ -29,7 +29,11 @@ export default {
     props: ["meta", "links"],
     computed: {
         pagesInfo() {
-            return `Page ${this.meta.current_page} of ${this.meta.last_page}`;
+            var currPage = this.meta?.current_page
+                ? this.meta.current_page
+                : "1";
+            var lastPage = this.meta?.last_page ? this.meta.last_page : "1";
+            return `Page ${currPage} of ${lastPage}`;
         },
         isFirst() {
             return this.meta.current_page === 1;
