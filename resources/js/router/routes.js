@@ -2,6 +2,7 @@ import QuestionsPage from "../pages/QuestionsPage";
 import QuestionPage from "../pages/QuestionPage";
 import MyPostsPage from "../pages/MyPostsPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import CreateQuestionPage from "../pages/CreateQuestionPage";
 
 const routes = [
     {
@@ -20,6 +21,17 @@ const routes = [
         name: "questions"
     },
     {
+        path: "/questions/create",
+        component: CreateQuestionPage,
+        name: "questions.create"
+    },
+    {
+        path: "/questions/:slug",
+        component: QuestionPage,
+        name: "questions.show"
+    },
+
+    {
         path: "/my-posts",
         component: MyPostsPage,
         name: "my-posts",
@@ -27,11 +39,7 @@ const routes = [
             requiresAuth: true
         }
     },
-    {
-        path: "/questions/:slug",
-        component: QuestionPage,
-        name: "questions.show"
-    },
+
     {
         path: "*",
         component: NotFoundPage,
