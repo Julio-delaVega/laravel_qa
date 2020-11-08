@@ -10907,13 +10907,21 @@ body {
   background: #f8fafc;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s linear;
+.slide-enter-active {
+  transition: all 0.5s linear;
 }
 
-.fade-enter,
-.fade-leave-to {
+.slide-leave-active {
+  transition: all 0.5s linear;
+}
+
+.slide-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.slide-enter {
+  transform: translateX(-100%);
   opacity: 0;
 }
 

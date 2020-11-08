@@ -45,7 +45,6 @@ const routes = [
             requiresAuth: true
         }
     },
-
     {
         path: "*",
         component: NotFoundPage,
