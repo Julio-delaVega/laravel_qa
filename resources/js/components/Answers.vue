@@ -18,7 +18,7 @@
                         <div v-if="nextUrl" class="text-center mt-3">
                             <button
                                 class="btn btn-outline-secondary"
-                                @click.prevent="fetch(nextUrl)"
+                                @click.prevent="fetch(cNextUrl)"
                             >
                                 Load more answers
                             </button>
@@ -38,6 +38,7 @@
 <script>
 import Answer from "./Answer";
 import NewAnswer from "./NewAnswer";
+import EventBus from "../eventbus";
 export default {
     components: {
         Answer,
@@ -49,12 +50,22 @@ export default {
             questionId: this.question.id,
             count: this.question.answers_count,
             answers: [],
+            excludeAnswers: [],
             nextUrl: null
         };
     },
     computed: {
         title() {
             return this.count + " " + (this.count > 1 ? "Answers" : "Answer");
+        },
+        cNextUrl() {
+            if (this.nextUrl && this.excludeAnswers.length) {
+                return (
+                    this.nextUrl +
+                    this.excludeAnswers.map(a => `&excludes[]=${a.id}`).join("")
+                );
+            }
+            return this.nextUrl;
         }
     },
     created() {
@@ -64,16 +75,23 @@ export default {
         fetch(endpoint) {
             axios.get(endpoint).then(res => {
                 this.answers.push(...res.data.data);
-                this.nextUrl = res.data.next_page_url;
+                this.nextUrl = res.data.links.next;
             });
         },
         add(answer) {
+            this.excludeAnswers.push(answer);
             this.answers.push(answer);
             this.count++;
+            if (this.count === 1) {
+                EventBus.$emit("answers-count-changed", this.count);
+            }
         },
         remove(index) {
             this.answers.splice(index, 1);
             this.count--;
+            if (this.count === 0) {
+                EventBus.$emit("answers-count-changed", this.count);
+            }
         }
     }
 };

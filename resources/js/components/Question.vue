@@ -54,10 +54,11 @@
                         <div class="d-flex align-items-center">
                             <h1>{{ title }}</h1>
                             <div class="ml-auto">
-                                <a
-                                    href="/questions"
+                                <router-link
+                                    exact
+                                    :to="{ name: 'questions' }"
                                     class="btn btn-outline-secondary"
-                                    >Go Back</a
+                                    >Go Back</router-link
                                 >
                             </div>
                         </div>
@@ -118,6 +119,7 @@
 
 <script>
 import modification from "../mixins/modification";
+import EventBus from "../eventbus";
 
 export default {
     props: ["question"],
@@ -146,6 +148,12 @@ export default {
             return `question-${this.id}`;
         }
     },
+    mounted() {
+        this.highlight();
+        EventBus.$on("answers-count-changed", count => {
+            this.question.answers_count = count;
+        });
+    },
     methods: {
         setEditCache() {
             this.beforeEditCache = {
@@ -168,11 +176,8 @@ export default {
                 this.$toast.success(res.data.message, "Success", {
                     timeout: 2000
                 });
+                this.$router.push({ name: "questions" });
             });
-
-            setTimeout(() => {
-                window.location.href = "/questions";
-            }, 4000);
         }
     }
 };

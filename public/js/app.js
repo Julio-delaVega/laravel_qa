@@ -12040,6 +12040,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Answer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Answer */ "./resources/js/components/Answer.vue");
 /* harmony import */ var _NewAnswer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NewAnswer */ "./resources/js/components/NewAnswer.vue");
+/* harmony import */ var _eventbus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../eventbus */ "./resources/js/eventbus.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -12091,6 +12092,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     Answer: _Answer__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -12102,12 +12104,22 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       questionId: this.question.id,
       count: this.question.answers_count,
       answers: [],
+      excludeAnswers: [],
       nextUrl: null
     };
   },
   computed: {
     title: function title() {
       return this.count + " " + (this.count > 1 ? "Answers" : "Answer");
+    },
+    cNextUrl: function cNextUrl() {
+      if (this.nextUrl && this.excludeAnswers.length) {
+        return this.nextUrl + this.excludeAnswers.map(function (a) {
+          return "&excludes[]=".concat(a.id);
+        }).join("");
+      }
+
+      return this.nextUrl;
     }
   },
   created: function created() {
@@ -12122,16 +12134,25 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
         (_this$answers = _this.answers).push.apply(_this$answers, _toConsumableArray(res.data.data));
 
-        _this.nextUrl = res.data.next_page_url;
+        _this.nextUrl = res.data.links.next;
       });
     },
     add: function add(answer) {
+      this.excludeAnswers.push(answer);
       this.answers.push(answer);
       this.count++;
+
+      if (this.count === 1) {
+        _eventbus__WEBPACK_IMPORTED_MODULE_2__["default"].$emit("answers-count-changed", this.count);
+      }
     },
     remove: function remove(index) {
       this.answers.splice(index, 1);
       this.count--;
+
+      if (this.count === 0) {
+        _eventbus__WEBPACK_IMPORTED_MODULE_2__["default"].$emit("answers-count-changed", this.count);
+      }
     }
   }
 });
@@ -12387,6 +12408,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_modification__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/modification */ "./resources/js/mixins/modification.js");
+/* harmony import */ var _eventbus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../eventbus */ "./resources/js/eventbus.js");
 //
 //
 //
@@ -12505,6 +12527,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["question"],
@@ -12529,6 +12553,14 @@ __webpack_require__.r(__webpack_exports__);
       return "question-".concat(this.id);
     }
   },
+  mounted: function mounted() {
+    var _this = this;
+
+    this.highlight();
+    _eventbus__WEBPACK_IMPORTED_MODULE_1__["default"].$on("answers-count-changed", function (count) {
+      _this.question.answers_count = count;
+    });
+  },
   methods: {
     setEditCache: function setEditCache() {
       this.beforeEditCache = {
@@ -12547,16 +12579,17 @@ __webpack_require__.r(__webpack_exports__);
       };
     },
     "delete": function _delete() {
-      var _this = this;
+      var _this2 = this;
 
       axios["delete"](this.endpoint).then(function (res) {
-        _this.$toast.success(res.data.message, "Success", {
+        _this2.$toast.success(res.data.message, "Success", {
           timeout: 2000
         });
+
+        _this2.$router.push({
+          name: "questions"
+        });
       });
-      setTimeout(function () {
-        window.location.href = "/questions";
-      }, 4000);
     }
   }
 });
@@ -12573,6 +12606,12 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_destroy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../mixins/destroy */ "./resources/js/mixins/destroy.js");
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -13175,7 +13214,26 @@ __webpack_require__.r(__webpack_exports__);
     Question: _components_Question__WEBPACK_IMPORTED_MODULE_0__["default"],
     Answers: _components_Answers__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
-  props: ["question"]
+  props: ["slug"],
+  data: function data() {
+    return {
+      question: {}
+    };
+  },
+  mounted: function mounted() {
+    this.fetchQuestion();
+  },
+  methods: {
+    fetchQuestion: function fetchQuestion() {
+      var _this = this;
+
+      axios.get("/questions/".concat(this.slug)).then(function (res) {
+        _this.question = res.data.data;
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -67140,7 +67198,7 @@ var render = function() {
                               on: {
                                 click: function($event) {
                                   $event.preventDefault()
-                                  return _vm.fetch(_vm.nextUrl)
+                                  return _vm.fetch(_vm.cNextUrl)
                                 }
                               }
                             },
@@ -67546,7 +67604,21 @@ var render = function() {
               _c("div", { staticClass: "d-flex align-items-center" }, [
                 _c("h1", [_vm._v(_vm._s(_vm.title))]),
                 _vm._v(" "),
-                _vm._m(0)
+                _c(
+                  "div",
+                  { staticClass: "ml-auto" },
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        staticClass: "btn btn-outline-secondary",
+                        attrs: { exact: "", to: { name: "questions" } }
+                      },
+                      [_vm._v("Go Back")]
+                    )
+                  ],
+                  1
+                )
               ])
             ]),
             _vm._v(" "),
@@ -67625,23 +67697,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "ml-auto" }, [
-      _c(
-        "a",
-        {
-          staticClass: "btn btn-outline-secondary",
-          attrs: { href: "/questions" }
-        },
-        [_vm._v("Go Back")]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -67696,11 +67752,25 @@ var render = function() {
     _vm._v(" "),
     _c("div", { staticClass: "media-body" }, [
       _c("div", { staticClass: "d-flex align-items-center" }, [
-        _c("h3", { staticClass: "mt-0" }, [
-          _c("a", { attrs: { href: "#" } }, [
-            _vm._v(_vm._s(_vm.question.title))
-          ])
-        ]),
+        _c(
+          "h3",
+          { staticClass: "mt-0" },
+          [
+            _c(
+              "router-link",
+              {
+                attrs: {
+                  to: {
+                    name: "questions.show",
+                    params: { slug: _vm.question.slug }
+                  }
+                }
+              },
+              [_vm._v(_vm._s(_vm.question.title))]
+            )
+          ],
+          1
+        ),
         _vm._v(" "),
         _c(
           "div",
@@ -68255,16 +68325,18 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "container" },
-    [
-      _c("question", { attrs: { question: _vm.question } }),
-      _vm._v(" "),
-      _c("answers", { attrs: { question: _vm.question } })
-    ],
-    1
-  )
+  return _vm.question.id
+    ? _c(
+        "div",
+        { staticClass: "container" },
+        [
+          _c("question", { attrs: { question: _vm.question } }),
+          _vm._v(" "),
+          _c("answers", { attrs: { question: _vm.question } })
+        ],
+        1
+      )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -83749,7 +83821,7 @@ __webpack_require__.r(__webpack_exports__);
     return user.id === model.user.id;
   },
   acceptBest: function acceptBest(user, answer) {
-    return user.id === answer.question.user.id;
+    return user.id === answer.question_user_id;
   },
   deleteQuestion: function deleteQuestion(user, question) {
     return user.id === question.user.id && question.answers_count < 1;
@@ -85278,7 +85350,8 @@ var routes = [{
 }, {
   path: "/questions/:slug",
   component: _pages_QuestionPage__WEBPACK_IMPORTED_MODULE_1__["default"],
-  name: "questions.show"
+  name: "questions.show",
+  props: true
 }, {
   path: "/questions/:id/edit",
   component: _pages_EditQuestionPage__WEBPACK_IMPORTED_MODULE_4__["default"],
