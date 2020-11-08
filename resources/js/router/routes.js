@@ -1,8 +1,9 @@
 import QuestionsPage from "../pages/QuestionsPage";
 import QuestionPage from "../pages/QuestionPage";
 import MyPostsPage from "../pages/MyPostsPage";
-import NotFoundPage from "../pages/NotFoundPage";
 import CreateQuestionPage from "../pages/CreateQuestionPage";
+import EditQuestionPage from "../pages/EditQuestionPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 const routes = [
     {
@@ -30,7 +31,11 @@ const routes = [
         component: QuestionPage,
         name: "questions.show"
     },
-
+    {
+        path: "/questions/:id/edit",
+        component: EditQuestionPage,
+        name: "questions.edit"
+    },
     {
         path: "/my-posts",
         component: MyPostsPage,

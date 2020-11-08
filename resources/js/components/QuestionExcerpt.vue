@@ -23,11 +23,14 @@
                     <a href="#">{{ question.title }}</a>
                 </h3>
                 <div class="ml-auto">
-                    <a
-                        href="#"
+                    <router-link
                         v-if="authorize('modify', question)"
+                        :to="{
+                            name: 'questions.edit',
+                            params: { id: question.id }
+                        }"
                         class="btn btn-outline-info btn-sm"
-                        >Edit</a
+                        >Edit</router-link
                     >
                     <form
                         v-if="authorize('deleteQuestion', question)"
@@ -76,5 +79,3 @@ export default {
     }
 };
 </script>
-
-<style></style>
