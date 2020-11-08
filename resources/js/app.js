@@ -16,6 +16,7 @@ import VueIziToast from "vue-izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 import Authorization from "./authorization/authorize";
 import router from "./router";
+import Spinner from "./components/Spinner.vue";
 
 Vue.use(VueIziToast);
 Vue.use(Authorization);
@@ -31,7 +32,7 @@ Vue.use(Authorization);
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component("question-page", require("./pages/QuestionPage.vue").default);
+Vue.component("spinner", Spinner);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -41,5 +42,39 @@ Vue.component("question-page", require("./pages/QuestionPage.vue").default);
 
 const app = new Vue({
     el: "#app",
-    router
+    data: {
+        loading: false
+    },
+    router,
+    created() {
+        // Add a request interceptor
+        axios.interceptors.request.use(
+            config => {
+                // Do something before request is sent
+                this.loading = true;
+                return config;
+            },
+            error => {
+                // Do something with request error
+                this.loading = false;
+                return Promise.reject(error);
+            }
+        );
+
+        // Add a response interceptor
+        axios.interceptors.response.use(
+            response => {
+                // Any status code that lie within the range of 2xx cause this function to trigger
+                // Do something with response data
+                this.loading = false;
+                return response;
+            },
+            error => {
+                // Any status codes that falls outside the range of 2xx cause this function to trigger
+                // Do something with response error
+                this.loading = false;
+                return Promise.reject(error);
+            }
+        );
+    }
 });

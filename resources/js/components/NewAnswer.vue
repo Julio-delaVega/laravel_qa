@@ -27,7 +27,14 @@
                                 :disabled="isInvalid"
                                 class="btn btn-lg btn-outline-primary"
                             >
-                                Submit
+                                <spinner
+                                    v-if="$root.loading"
+                                    :small="true"
+                                    :minWidth="57.45"
+                                ></spinner>
+                                <span v-else>
+                                    Submit
+                                </span>
                             </button>
                         </div>
                         <!-- form-group -->

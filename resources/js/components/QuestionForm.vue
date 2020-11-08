@@ -27,7 +27,8 @@
         <!-- form-group -->
         <div class="form-group">
             <button type="submit" class="btn btn-outline-primary btn-lg">
-                {{ buttonText }}
+                <spinner v-if="$root.loading" :small="true"></spinner>
+                <span v-else>{{ buttonText }}</span>
             </button>
         </div>
         <!-- form-group -->
