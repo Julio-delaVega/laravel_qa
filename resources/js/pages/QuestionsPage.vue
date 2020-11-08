@@ -1,9 +1,67 @@
 <template>
-    <h1>Questions Page</h1>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center">
+                            <h2>All Questions</h2>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-outline-secondary"
+                                    >Ask Question</a
+                                >
+                            </div>
+                            <!-- ml-auto -->
+                        </div>
+                        <!-- d-flex -->
+                    </div>
+                    <!-- card-header -->
+                    <div class="card-body">
+                        <div v-if="questions.length">
+                            <question-excerpt
+                                v-for="question in questions"
+                                :question="question"
+                                :key="question.id"
+                            ></question-excerpt>
+                        </div>
+                        <div v-else class="alert alert-warning">
+                            <strong>Sorry!</strong> There are no questions
+                            available.
+                        </div>
+                        <!-- pagination -->
+                    </div>
+                    <!-- card-body -->
+                </div>
+                <!-- card -->
+            </div>
+            <!-- col -->
+        </div>
+        <!-- row -->
+    </div>
+    <!-- container -->
 </template>
 
 <script>
-export default {};
+import QuestionExcerpt from "../components/QuestionExcerpt";
+export default {
+    components: {
+        QuestionExcerpt
+    },
+    data() {
+        return {
+            questions: []
+        };
+    },
+    mounted() {
+        this.fetchQuestions();
+    },
+    methods: {
+        fetchQuestions() {
+            axios.get("/questions").then(res => {
+                console.log(res);
+                this.questions = res.data.data;
+            });
+        }
+    }
+};
 </script>
-
-<style></style>
