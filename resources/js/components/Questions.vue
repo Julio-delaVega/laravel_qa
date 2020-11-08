@@ -3,9 +3,10 @@
         <div class="card-body">
             <div v-if="questions.length">
                 <question-excerpt
-                    v-for="question in questions"
+                    v-for="(question, index) in questions"
                     :question="question"
                     :key="question.id"
+                    @deleted="remove(index)"
                 ></question-excerpt>
             </div>
             <div v-else class="alert alert-warning">
@@ -45,11 +46,14 @@ export default {
                 this.meta = res.data.meta;
                 this.links = res.data.links;
             });
+        },
+        remove(index) {
+            this.questions.splice(index, 1);
+            // this.count--;
         }
     },
     watch: {
         $route() {
-            console.log("Watcher");
             this.fetchQuestions();
         }
     }

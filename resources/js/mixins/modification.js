@@ -2,9 +2,10 @@ import Vote from "../components/Vote";
 import UserInfo from "../components/UserInfo";
 import MEditor from "../components/MEditor";
 import highlight from "./highlight";
+import destroy from "./destroy";
 
 export default {
-    mixins: [highlight],
+    mixins: [highlight, destroy],
     components: { Vote, UserInfo, MEditor },
     data() {
         return {
@@ -41,43 +42,6 @@ export default {
             this.editing = false;
         },
         setEditCache() {},
-        restoreFromCache() {},
-        destroy() {
-            this.$toast.question("Are you sure?", "Confirm", {
-                timeout: 20000,
-                close: false,
-                overlay: true,
-                displayMode: "once",
-                id: "question",
-                zindex: 999,
-                position: "center",
-                buttons: [
-                    [
-                        "<button><b>YES</b></button>",
-                        (instance, toast) => {
-                            this.delete();
-
-                            instance.hide(
-                                { transitionOut: "fadeOut" },
-                                toast,
-                                "button"
-                            );
-                        },
-                        true
-                    ],
-                    [
-                        "<button>NO</button>",
-                        function(instance, toast) {
-                            instance.hide(
-                                { transitionOut: "fadeOut" },
-                                toast,
-                                "button"
-                            );
-                        }
-                    ]
-                ]
-            });
-        },
-        delete() {}
+        restoreFromCache() {}
     }
 };
